@@ -54,8 +54,8 @@ class sol_state():
 def filterPegs(move) :
     canMove = []
     for movements in move:
-        if movements[0] not in canMove:
-            canMove.append(movements[0])
+        if move_initial(movements[0]) not in canMove:
+            canMove.append(move_initial(movements[0]))
     return len(canMove)
 
 """Models a Solitaire problem as a satisfaction problem.
@@ -79,8 +79,8 @@ class solitaire(Problem):
         return c + 1
 
     def h(self, node):
-        #return  (2*node.state.countPegs() -1 - filterPegs(board_moves(node.state.board)))
-        return (len(node.state.board)*len(node.state.board[0])-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
+        return  (2*node.state.countPegs() -1 - filterPegs(board_moves(node.state.board)))
+        #return (len(node.state.board)*len(node.state.board[0])-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
  
 
 
@@ -168,11 +168,6 @@ def board_moves(board):
 
 
 
-m5x5 = [["_","O","O","O","_"],
-        ["O","_","O","_","O"],
-        ["_","O","_","O","_"],
-        ["O","_","O","_","_"],
-        ["_","O","_","_","_"]]
 
 m4x4 = [["O","O","O","X"],
         ["O","O","O","O"],
@@ -184,12 +179,18 @@ m4x5 = [["O","O","O","X","X"],
         ["O","_","O","_","O"],
         ["O","O","O","O","O"]]
 
+m5x5 = [["_","O","O","O","_"],
+        ["O","_","O","_","O"],
+        ["_","O","_","O","_"],
+        ["O","_","O","_","_"],
+        ["_","O","_","_","_"]]
+
 m4x6 = [["O","O","O","X","X","X"],
         ["O","_","O","O","O","O"],
         ["O","O","O","O","O","O"],
         ["O","O","O","O","O","O"]] 
 
-def test(board):
+"""def test(board):
     start = time.time()
     print("greedy_search: ", greedy_search(solitaire(board)).state.board)
     end1 = time.time()
@@ -204,4 +205,53 @@ def test(board):
     end3 = time.time()
     print("  Time: ",end3 - end2)
 
-test(m5x5)
+test(m4x5) """
+"""matrixes = [m4x4, m4x5, m5x5]
+
+def register(matrixes):
+    for m in matrixes:
+        game = solitaire(m)
+        problem = InstrumentedProblem(game)
+        start = time.time()
+        greedy_search(problem)
+        print("greedy_search: ", problem)
+        end1 = time.time()
+        print("  Time: ",end1 - start)
+        print(problem)
+
+        game = solitaire(m)
+        problem = InstrumentedProblem(game)
+        end1 = time.time()
+        depth_first_tree_search(problem)
+        print("depth_first_tree_search: ", problem)
+        end2 = time.time()
+        print("  Time: ",end2 - end1)
+        print(problem)
+
+        game = solitaire(m)
+        problem = InstrumentedProblem(game)
+        end2 = time.time()
+        astar_search(problem)
+        print("astar_search: ", problem)
+        end3 = time.time()
+        print("  Time: ",end3 - end2)
+        
+        print(problem)
+
+register(matrixes)
+game = solitaire(m4x6)
+problem = InstrumentedProblem(game)
+start = time.time()
+greedy_search(problem)
+print("greedy_search: ", problem)
+end1 = time.time()
+print("  Time: ",end1 - start)
+
+
+game = solitaire(m4x6)
+problem = InstrumentedProblem(game)
+end2 = time.time()
+astar_search(problem)
+print("astar_search: ", problem)
+end3 = time.time()
+print("  Time: ",end3 - end2)"""
