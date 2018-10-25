@@ -120,13 +120,16 @@ class solitaire(Problem):
         return c + 1
 
     def h(self, node):
+        return  2*node.state.countPegs() -1 -len(board_moves(node.state.board))
 
+        #return  (2*node.state.countPegs() -1 - filterPegs(board_moves(node.state.board)))-len(board_moves(node.state.board))
         #return ((node.state.countPegs()*2)-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
+        #return filterPegs(board_moves(node.state.board))*((node.state.countPegs()*2)-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
  
         #print(corner(board_moves(node.state.board),(self.lines/2,self.collumns/2)) + isolated_pegs(node.state.board,self.lines,self.collumns) - filterPegs(board_moves(node.state.board)) , end=' ')
         ##return corner(board_moves(node.state.board),(self.lines/2,self.collumns/2)) + isolated_pegs(node.state.board,self.lines,self.collumns) - filterPegs(board_moves(node.state.board))  
         #return  (2*node.state.countPegs() -1 - filterPegs(board_moves(node.state.board)))
-        return (len(node.state.board)*len(node.state.board[0])-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
+        #return (len(node.state.board)*len(node.state.board[0])-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
  
 
 
