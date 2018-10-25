@@ -206,7 +206,7 @@ m4x6 = [["O","O","O","X","X","X"],
     print("  Time: ",end3 - end2)
 
 test(m4x5) """
-"""matrixes = [m4x4, m4x5, m5x5]
+matrixes = [m4x4, m4x5, m5x5]
 
 def register(matrixes):
     for m in matrixes:
@@ -254,4 +254,4 @@ end2 = time.time()
 astar_search(problem)
 print("astar_search: ", problem)
 end3 = time.time()
-print("  Time: ",end3 - end2)"""
+print("  Time: ",end3 - end2)
