@@ -1,5 +1,6 @@
 from search import *
 import time
+import math
 
 # TAI content
 def c_peg  ():
@@ -58,6 +59,44 @@ def filterPegs(move) :
             canMove.append(move_initial(movements[0]))
     return len(canMove)
 
+def corner(movements,center):
+    count = 0
+    for move in movements:
+        if (dist(move_final(move),center)>dist(move_initial(move),center)):
+            count += 1
+    return count   
+
+def dist(pos1,pos2):
+    return math.pow((pos_l(pos1)-pos_l(pos2)),2) + math.pow((pos_c(pos1)-pos_c(pos2)),2)
+
+
+def isolated_peg(board,pos):
+    if(pos_l(pos)<len(board)-2):
+        check = check_d_moves(pos,board)
+        if (check!=[]):
+            return False
+    if(pos_l(pos)>1):
+        check = check_u_moves(pos,board)
+        if (check!=[]):
+            return False
+    if(pos_c(pos)<len(board[0])-2):
+        check = check_r_moves(pos,board)
+        if (check!=[]):
+            return False
+    if(pos_c(pos)>1):
+        check = check_l_moves(pos,board)
+        if (check!=[]):
+            return False
+    return True
+
+def isolated_pegs(board,lines,collums):
+    count = 0
+    for i in range(0,lines):
+        for j in range(0,collums):
+            if isolated_peg(board,make_pos(i,j)):
+                count += 1
+    return count
+
 """Models a Solitaire problem as a satisfaction problem.
  A solution cannot have more than 1 peg left on the board."""
 class solitaire(Problem):
@@ -65,6 +104,8 @@ class solitaire(Problem):
     def __init__(self, board):
         super().__init__(self,board)
         self.initial = sol_state(board)
+        self.lines = len(board)
+        self.collumns = len(board[0])
 
     def actions(self, state):
         return board_moves(state.board)
@@ -79,8 +120,13 @@ class solitaire(Problem):
         return c + 1
 
     def h(self, node):
-        return  (2*node.state.countPegs() -1 - filterPegs(board_moves(node.state.board)))
-        #return (len(node.state.board)*len(node.state.board[0])-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
+
+        #return ((node.state.countPegs()*2)-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
+ 
+        #print(corner(board_moves(node.state.board),(self.lines/2,self.collumns/2)) + isolated_pegs(node.state.board,self.lines,self.collumns) - filterPegs(board_moves(node.state.board)) , end=' ')
+        ##return corner(board_moves(node.state.board),(self.lines/2,self.collumns/2)) + isolated_pegs(node.state.board,self.lines,self.collumns) - filterPegs(board_moves(node.state.board))  
+        #return  (2*node.state.countPegs() -1 - filterPegs(board_moves(node.state.board)))
+        return (len(node.state.board)*len(node.state.board[0])-len(board_moves(node.state.board)))*(node.state.countPegs() -1)
  
 
 
@@ -239,6 +285,9 @@ def register(matrixes):
         print(problem)
 
 register(matrixes)
+
+
+
 game = solitaire(m4x6)
 problem = InstrumentedProblem(game)
 start = time.time()
@@ -246,6 +295,8 @@ greedy_search(problem)
 print("greedy_search: ", problem)
 end1 = time.time()
 print("  Time: ",end1 - start)
+
+
 
 
 game = solitaire(m4x6)
