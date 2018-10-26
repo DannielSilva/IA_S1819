@@ -187,7 +187,7 @@ class solitaire(Problem):
 				return c + 1
 
 		def h(self, node):
-				return  2*node.state.countPegs() -1 -len(board_moves(node.state.board))
+				#return  2*node.state.countPegs() -1 -len(board_moves(node.state.board))
 				return  3*node.state.countPegs() -1 -len(board_moves(node.state.board))-filterPegs(board_moves(node.state.board))
 		
 
