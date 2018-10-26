@@ -1,3 +1,8 @@
+"""
+86409 Diogo Pereira
+86445 Joao Daniel Silva
+Grupo 40
+"""
 from search import *
 import time
 import math
@@ -52,117 +57,6 @@ class sol_state():
 										pegs += 1
 				return pegs
 
-def filterPegs(move) :
-		canMove = []
-		for movements in move:
-				if move_initial(movements[0]) not in canMove:
-						canMove.append(move_initial(movements[0]))
-		return len(canMove)
-
-def corner(movements,center):
-		count = 0
-		for move in movements:
-				if (dist(move_final(move),center)>dist(move_initial(move),center)):
-						count += 1
-		return count   
-
-def dist(pos1,pos2):
-		return math.pow((pos_l(pos1)-pos_l(pos2)),2) + math.pow((pos_c(pos1)-pos_c(pos2)),2)
-
-
-def isolated_peg(board,pos):
-		if(pos_l(pos)<len(board)-2):
-				check = check_d_moves(pos,board)
-				if (check!=[]):
-						return False
-		if(pos_l(pos)>1):
-				check = check_u_moves(pos,board)
-				if (check!=[]):
-						return False
-		if(pos_c(pos)<len(board[0])-2):
-				check = check_r_moves(pos,board)
-				if (check!=[]):
-						return False
-		if(pos_c(pos)>1):
-				check = check_l_moves(pos,board)
-				if (check!=[]):
-						return False
-		return True
-
-def isolated_pegs(board,lines,collums):
-		count = 0
-		for i in range(0,lines):
-				for j in range(0,collums):
-						if isolated_peg(board,make_pos(i,j)):
-								count += 1
-		return count
-
-def parity(num):
-		if num%2 == 0:
-				return True
-		return False
-
-def cantMoveDown(board,pos):
-		if(is_peg(board[pos_l(pos)][pos_c(pos)]) and is_peg(board[pos_l(pos)+1][pos_c(pos)]) and is_empty(board[pos_l(pos)+2][pos_c(pos)]) ):
-				return False
-		return True
-
-def cantMoveUp(board,pos):
-		if(is_peg(board[pos_l(pos)][pos_c(pos)]) and is_peg(board[pos_l(pos)-1][pos_c(pos)]) and is_empty(board[pos_l(pos)-2][pos_c(pos)]) ):
-				return False
-		return True
-
-def cantMoveRight(board,pos):
-		if(is_peg(board[pos_l(pos)][pos_c(pos)]) and is_peg(board[pos_l(pos)][pos_c(pos)]+1) and is_empty(board[pos_l(pos)+2][pos_c(pos)+2]) ):
-				return False
-		return True
-
-def cantMoveLeft(board,pos):
-		if(is_peg(board[pos_l(pos)][pos_c(pos)]) and is_peg(board[pos_l(pos)][pos_c(pos)+1]) and is_empty(board[pos_l(pos)][pos_c(pos)+2]) ):
-				return False
-		return True
-
-def divMoves(board,lines,collums):
-		count=0
-		halfLines = lines//2
-		halfCollums = collums//2
-		if lines > 4:
-			if parity(lines):
-					for j in range(0,collums):
-							for i in range(0,halfLines-3):
-									if cantMoveDown(board,make_pos(i,j)):
-												count += 1
-												
-							for i in range(halfLines+3,lines-1):
-									if cantMoveUp(board,make_pos(i,j)):
-												count += 1
-			else:
-					for j in range(0,collums):
-							for i in range(0,halfLines-2):
-									if cantMoveDown(board,make_pos(i,j)):
-												count += 1
-							for i in range(halfLines+2,lines-1):
-									if cantMoveUp(board,make_pos(i,j)):
-												count += 1
-		if collums > 4:
-			if parity(collums):
-					for j in range(0,lines):
-							for i in range(0,halfCollums-3):
-									if cantMoveRight(board,make_pos(i,j)):
-												count += 1
-							for i in range(halfCollums+3,collums-1):
-									if cantMoveLeft(board,make_pos(i,j)):
-												count += 1
-			else:
-					for j in range(0,lines):
-							for i in range(0,halfCollums-2):
-									if cantMoveRight(board,make_pos(i,j)):
-												count += 1
-							for i in range(halfCollums+2,collums-1):
-									if cantMoveLeft(board,make_pos(i,j)):
-										count += 1
-		return count
-
 
 """Models a Solitaire problem as a satisfaction problem.
  A solution cannot have more than 1 peg left on the board."""
@@ -171,8 +65,6 @@ class solitaire(Problem):
 		def __init__(self, board):
 				super().__init__(self,board)
 				self.initial = sol_state(board)
-				self.lines = len(board)
-				self.collums = len(board[0])
 
 		def actions(self, state):
 				return board_moves(state.board)
@@ -187,13 +79,13 @@ class solitaire(Problem):
 				return c + 1
 
 		def h(self, node):
-				#return  2*node.state.countPegs() -1 -len(board_moves(node.state.board))
+				""" Number of impossible movements plus the number of pegs that cannot move
+					impossible movements = 2*node.state.countPegs()- len(board_moves(node.state.board)) 
+					pegs that cannot move = node.state.countPegs() - filterPegs(board_moves(node.state.board)) """
 				return  3*node.state.countPegs() -1 -len(board_moves(node.state.board))-filterPegs(board_moves(node.state.board))
-		
 
-b1 = [["_","O","O","O","_"], ["O","_","O","_","O"], ["_","O","_","O","_"],
- ["O","_","O","_","_"], ["_","O","_","_","_"]] 
-
+""" Returns a new board which is the state of the board after perfoming a valid movement
+	Moves a peg to its new position and removes the peg that was removed by the former """		
 def board_perform_move(board, move):
 
 		if pos_l(move_final(move)) == pos_l(move_initial(move)):
@@ -222,6 +114,8 @@ def board_perform_move(board, move):
 		newBoard[pos_l(move_final(move))][pos_c(move_final(move))] = c_peg()
 		return newBoard
 
+""" Returns all movements a given peg can make in a given board 
+	the functions above are used to specify which direction the peg can move"""
 def check_moves(pos,board):
 		moves = []
 		if(pos_l(pos)<len(board)-2):
@@ -263,6 +157,7 @@ def check_l_moves(pos,board):
 				return [pos,make_pos(pos_l(pos),pos_c(pos)-2)]
 		return []
 
+""" Returns a list with valid movements   """ 
 def board_moves(board):
 		moves = []
 		for i in range(0,len(board)):
@@ -273,97 +168,11 @@ def board_moves(board):
 							 
 		return moves
 
+""" Returns the number of pegs that can make a valid move in the current board state """
+def filterPegs(move) :
+		canMove = []
+		for movements in move:
+				if move_initial(movements) not in canMove:
+						canMove.append(move_initial(movements))
+		return len(canMove)
 
-
-
-m4x4 = [["O","O","O","X"],
-				["O","O","O","O"],
-				["O","_","O","O"],
-				["O","O","O","O"]]      
-
-m4x5 = [["O","O","O","X","X"],
-				["O","O","O","O","O"],
-				["O","_","O","_","O"],
-				["O","O","O","O","O"]]
-
-m5x5 = [["_","O","O","O","_"],
-				["O","_","O","_","O"],
-				["_","O","_","O","_"],
-				["O","_","O","_","_"],
-				["_","O","_","_","_"]]
-
-m4x6 = [["O","O","O","X","X","X"],
-				["O","_","O","O","O","O"],
-				["O","O","O","O","O","O"],
-				["O","O","O","O","O","O"]] 
-
-"""def test(board):
-		start = time.time()
-		print("greedy_search: ", greedy_search(solitaire(board)).state.board)
-		end1 = time.time()
-		print("  Time: ",end1 - start)
-
-		print("depth_first_tree_search: ", depth_first_tree_search(solitaire(board)).state.board)
-		end2 = time.time()
-		print("  Time: ",end2 - end1)
-
-		
-		print("astar_search: ", astar_search(solitaire(board)).state.board)
-		end3 = time.time()
-		print("  Time: ",end3 - end2)
-
-test(m4x5) """
-matrixes = [m4x4, m4x5, m5x5]
-
-def register(matrixes):
-		for m in matrixes:
-				game = solitaire(m)
-				problem = InstrumentedProblem(game)
-				start = time.time()
-				greedy_search(problem)
-				print("greedy_search: ", problem)
-				end1 = time.time()
-				print("  Time: ",end1 - start)
-				print(problem)
-
-				game = solitaire(m)
-				problem = InstrumentedProblem(game)
-				end1 = time.time()
-				depth_first_tree_search(problem)
-				print("depth_first_tree_search: ", problem)
-				end2 = time.time()
-				print("  Time: ",end2 - end1)
-				print(problem)
-
-				game = solitaire(m)
-				problem = InstrumentedProblem(game)
-				end2 = time.time()
-				astar_search(problem)
-				print("astar_search: ", problem)
-				end3 = time.time()
-				print("  Time: ",end3 - end2)
-				
-				print(problem)
-
-register(matrixes)
-
-
-
-game = solitaire(m4x6)
-problem = InstrumentedProblem(game)
-start = time.time()
-greedy_search(problem)
-print("greedy_search: ", problem)
-end1 = time.time()
-print("  Time: ",end1 - start)
-
-
-
-
-game = solitaire(m4x6)
-problem = InstrumentedProblem(game)
-end2 = time.time()
-astar_search(problem)
-print("astar_search: ", problem)
-end3 = time.time()
-print("  Time: ",end3 - end2)
