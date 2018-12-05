@@ -20,6 +20,7 @@ class finiteMDP:
         self.P = P
         self.R = R
         self.absorv = absorv
+
         # completar se necessario
         
             
@@ -62,27 +63,45 @@ class finiteMDP:
 
             
     def traces2Q(self, trace):
-                # implementar esta funcao
-        
-
+        self.Q = np.zeros((self.nS,self.nA))
+        newQ = np.zeros((self.nS,self.nA))
+        while True:            
+            for t in trace:
+                #[x, a, y, r]
+                newQ[int(t[0]),int(t[1])] = newQ[int(t[0]),int(t[1])] + 0.5 * (t[3] + self.gamma * max(newQ[int(t[2]),:]) - newQ[int(t[0]),int(t[1])])
+            err = np.linalg.norm(self.Q-newQ)
+            self.Q = np.copy(newQ)
+            if err < 1e-2:
+                break 
         return self.Q
     
     def policy(self, x, poltype = 'exploration', par = []):
-        # implementar esta funcao
-        
+
         if poltype == 'exploitation':
-            pass
+            #baseado na maior recompensa anterior
+            max = par[x,0]
+            a = 0
+
+            for i in range(len(par[x])):
+
+                if par[x][i] > max:
+                    max = par[x][i]
+                    a = i
 
             
         elif poltype == 'exploration':
-            pass
+            #aleatorio
 
-                
-        return a
+
+            a =  random.randint(0,self.nA-1)
+
+        #print(a)       
+        return int(a)
     
     def Q2pol(self, Q, eta=5):
         # implementar esta funcao
+
         return np.exp(eta*Q)/np.dot(np.exp(eta*Q),np.array([[1,1],[1,1]]))
 
 
-            
+

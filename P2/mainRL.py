@@ -30,18 +30,17 @@ Pl[5,1,4]=1
 Pl[6,1,5]=1
    
 Rl = np.zeros((7,2))
-print(Rl)
-print(Pl)
+
 Rl[[0,6],:]=1
 absorv = np.zeros((7,1))
 absorv[[0,6]]=1
 fmdp = RL.finiteMDP(7,2,0.9,Pl,Rl,absorv)
 
-J,traj = fmdp.runPolicy(4,3,poltype = "exploration")
+J,traj = fmdp.runPolicy(3000,3,poltype = "exploration")
 data = np.load("Q1.npz")
 Qr = fmdp.traces2Q(traj)
 if np.sqrt(sum(sum((data['Q1']-Qr)**2)))<1:
-    print("Aproximação de Q dentro do previsto. OK\n")
+    print("Aproximação de Q dentro do previsto. muy bueno\n")
 else:
     print("Aproximação de Q fora do previsto. FAILED\n")
 
