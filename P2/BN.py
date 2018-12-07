@@ -32,30 +32,22 @@ class BN():
         self.prob = prob
 
     def computePostProb(self, evid):
-        #print("initial evid ",evid)
         evid = list(evid)
         evTested = evid.index(-1)
         evid[evTested] = 1
         negative_evs = list(evid)
         negative_evs[evTested] = 0
-
         evsTorF = [i for i, e in enumerate(evid) if e == []] #indexes in array evid of unknown variables
         combinations = [item for item in itertools.product([0,1], repeat=len(evsTorF))] #possible combinations between these variables
         positive = negative = 0
-
         for c in combinations:
             for i in range(len(c)):
                 evid[evsTorF[i]] = c[i]
                 negative_evs[evsTorF[i]] = c[i]
-            #print("pos evid: ", evid , self.computeJointProb(evid))
-            #print("neg  evid: ", negative_evs)
             positive += self.computeJointProb(evid)
             negative += self.computeJointProb(negative_evs)
-
         return positive / (positive + negative)
 
-        
-        
     def computeJointProb(self, evid):
         """
         p = [1,1]
